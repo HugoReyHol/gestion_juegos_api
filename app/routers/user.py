@@ -4,17 +4,21 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserCreate
 from app.db.models import User
-from app.security.jwt_util import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, hash_password, verify_password
+from app.security.jwt_util import get_current_user, verify_password, ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
 router = APIRouter(
     prefix="/user",
     tags=["Users"]
 )
 
+@router.get("/me")
+async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
+    return current_user
+
 @router.post("/login")
-def get_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db:Session=Depends(get_db)):
+async def get_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db:Session=Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -22,7 +26,7 @@ def get_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db:Sess
         raise HTTPException(status_code=401, detail="Wrong credentials")
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    access_token = await create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/insert")
