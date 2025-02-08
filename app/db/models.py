@@ -1,5 +1,5 @@
 from app.db.database import Base
-from sqlalchemy import Column,Integer,String, BLOB
+from sqlalchemy import Column,Integer,String, LargeBinary
 from sqlalchemy.schema import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -16,7 +16,7 @@ class Game(Base):
     idGame = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String)
     description = Column(String)
-    image = Column(BLOB)
+    image = Column(LargeBinary)
     details = Column(String)
     releases = Column(String)
     userGame = relationship("UserGame", backref="Games", cascade="delete,merge")
