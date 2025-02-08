@@ -18,10 +18,8 @@ def get_user(username: str, db:Session=Depends(get_db)) -> dict:
     return user
 
 @router.post("/")
-def insert_user(user: UserCreate, db:Session=Depends(get_db)) -> dict:
-    # TODO comprobar que no cree usuarios con el mismo username
-    # TODO comprobar si devuelve el idUser para asignarlo en el cliente
-    existing_user = db.query(User).filter(User.userGame == user.username).first()
+def insert_user(user: UserCreate, db:Session=Depends(get_db)) -> int:
+    existing_user = db.query(User).filter(User.username == user.username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
 
