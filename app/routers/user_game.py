@@ -25,8 +25,8 @@ def get_user_games(id_user: int, db: Session = Depends(get_db)) -> List[UserGame
 
 @router.patch("/{idUser}/{idGame}", response_model=bool)
 def update_user_game(id_user: int, id_game: int, updates: UserGameUpdate, db: Session = Depends(get_db)) -> bool:
-    user_game = db.query(UserGame).filter(UserGame.idUser == id_user, UserGame.idGame == id_game).first()
-    if not user_game:
+    user_game = db.query(UserGame).filter(UserGame.idUser == id_user, UserGame.idGame == id_game)
+    if not user_game.first():
         raise HTTPException(status_code=404, detail="UserGame not found")
     # for key, value in updates.model_dump(exclude_unset=True).items():
     #     setattr(user_game, key, value)
