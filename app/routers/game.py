@@ -14,4 +14,4 @@ router = APIRouter(
 @router.get("/", response_model=List[GameResponse])
 def get_games(db:Session=Depends(get_db)):
     games = db.query(Game).order_by(asc(Game.title)).all()
-    return games
+    return [GameResponse.from_game_model(game) for game in games]
