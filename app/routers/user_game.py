@@ -2,8 +2,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.db.models import UserGame
+from app.db.models import UserGame, User
 from app.schemas.user_game import UserGameUpdate, UserGameScheme
+from app.security.jwt_util import get_current_user
 
 router = APIRouter(
     prefix="/user_game",
@@ -17,9 +18,9 @@ def insert_user_game(user_game: UserGameScheme, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user_game)
 
-@router.get("/{idUser}", response_model=List[UserGameScheme])
-def get_user_games(id_user: int, db: Session = Depends(get_db)) -> List[UserGameScheme]:
-    user_games = db.query(UserGame).filter(UserGame.idUser == id_user).all()
+@router.get("/", response_model=List[UserGameScheme])
+def get_user_games(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> List[UserGameScheme]:
+    user_games = db.query(UserGame).filter(UserGame.idUser == current_user.idUser).all()
     return user_games
 
 @router.patch("/{idUser}/{idGame}")
