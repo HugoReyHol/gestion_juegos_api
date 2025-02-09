@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.post("/")
 def insert_user_game(user_game: UserGameScheme, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    new_user_game = UserGame(idUser=current_user.idUser, **user_game.model_dump())
+    new_user_game = UserGame(idUser=current_user.idUser, **user_game.model_dump(exclude_unset=True))
     db.add(new_user_game)
     db.commit()
     db.refresh(new_user_game)

@@ -34,7 +34,10 @@ def get_user(form_data: OAuth2PasswordRequestForm = Depends(), db:Session=Depend
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "idUser": user.idUser,
+        "token": f"Bearer {access_token}",
+        "token_type": "bearer"}
 
 @router.post("/insert")
 def insert_user(user: UserCreate, db:Session=Depends(get_db)):
@@ -53,4 +56,4 @@ def insert_user(user: UserCreate, db:Session=Depends(get_db)):
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
 
-    return {"id": new_user.idUser, "access_token": access_token, "token_type": "bearer"}
+    return {"idUser": new_user.idUser, "token": f"Bearer {access_token}", "token_type": "bearer"}
