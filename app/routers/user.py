@@ -24,7 +24,24 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
         password=current_user.password,
     )
 
-@router.post("/login")
+@router.post("/login", responses={
+    404: {
+        "description": "User not found",
+        "content": {
+            "application/json": {
+                "example": {"detail": "string"}
+            }
+        }
+    },
+    401: {
+        "description": "Wrong credentials",
+        "content": {
+            "application/json": {
+                "example": {"detail": "string"}
+            }
+        }
+    }
+})
 def get_user(form_data: OAuth2PasswordRequestForm = Depends(), db:Session=Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user:
@@ -39,11 +56,20 @@ def get_user(form_data: OAuth2PasswordRequestForm = Depends(), db:Session=Depend
         "token": f"Bearer {access_token}",
         "token_type": "bearer"}
 
-@router.post("/insert")
+@router.post("/insert", responses={
+    400: {
+        "description": "The user already exists",
+        "content": {
+            "application/json": {
+                "example": {"detail": "string"}
+            }
+        }
+    }
+})
 def insert_user(user: UserCreate, db:Session=Depends(get_db)):
     existing_user = db.query(User).filter(User.username == user.username).first()
     if existing_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
+        raise HTTPException(status_code=400, detail="The user already exists")
 
     new_user = User(
         username = user.username,
