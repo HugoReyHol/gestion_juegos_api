@@ -1,5 +1,5 @@
 from app.db.database import Base
-from sqlalchemy import Column,Integer,String, LargeBinary
+from sqlalchemy import Column, Integer, String, LargeBinary, DateTime
 from sqlalchemy.schema import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -28,5 +28,5 @@ class UserGame(Base):
     score = Column(Integer, nullable=True)
     timePlayed = Column(Integer)
     gameState = Column(String)
-    lastChange = Column(Integer)
+    lastChange = Column(DateTime)
 
