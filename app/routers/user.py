@@ -37,7 +37,7 @@ def get_user(form_data: OAuth2PasswordRequestForm = Depends(), db:Session=Depend
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/insert")
-def insert_user(user: UserCreate, db:Session=Depends(get_db)) -> int:
+def insert_user(user: UserCreate, db:Session=Depends(get_db)):
     existing_user = db.query(User).filter(User.username == user.username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
@@ -49,5 +49,8 @@ def insert_user(user: UserCreate, db:Session=Depends(get_db)) -> int:
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return new_user.idUser
 
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+
+    return {"id": new_user.idUser, "access_token": access_token, "token_type": "bearer"}
