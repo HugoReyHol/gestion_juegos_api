@@ -11,19 +11,54 @@ router = APIRouter(
     tags=["UserGames"]
 )
 
-@router.post("/")
+@router.post("/", responses={
+    401: {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "example": {"detail": "string"}
+            }
+        }
+    }
+})
 def insert_user_game(user_game: UserGameInsert, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     new_user_game = UserGame(idUser=current_user.idUser, **user_game.model_dump(exclude_unset=True))
     db.add(new_user_game)
     db.commit()
     db.refresh(new_user_game)
 
-@router.get("/", response_model=List[UserGameResponse])
+@router.get("/", response_model=List[UserGameResponse], responses={
+    401: {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "example": {"detail": "string"}
+            }
+        }
+    }
+})
 def get_user_games(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> List[UserGameResponse]:
     user_games = db.query(UserGame).filter(UserGame.idUser == current_user.idUser).all()
     return [UserGameResponse.convert_timestamp(user_game) for user_game in user_games]
 
-@router.patch("/{idGame}")
+@router.patch("/{idGame}", responses={
+    401: {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "example": {"detail": "string"}
+            }
+        }
+    },
+    404: {
+        "description": "UserGame not found",
+        "content": {
+            "application/json": {
+                "example": {"detail": "string"}
+            }
+        }
+    }
+})
 def update_user_game(id_game: int, updates: UserGameUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     user_game = db.query(UserGame).filter(UserGame.idUser == current_user.idUser, UserGame.idGame == id_game)
     if not user_game.first():
@@ -31,7 +66,24 @@ def update_user_game(id_game: int, updates: UserGameUpdate, db: Session = Depend
     user_game.update(updates.model_dump(exclude_unset=True))
     db.commit()
 
-@router.delete("/{idGame}")
+@router.delete("/{idGame}", responses={
+    401: {
+        "description": "Unauthorized",
+        "content": {
+            "application/json": {
+                "example": {"detail": "string"}
+            }
+        }
+    },
+    404: {
+        "description": "UserGame not found",
+        "content": {
+            "application/json": {
+                "example": {"detail": "string"}
+            }
+        }
+    }
+})
 def delete_user_game(id_game: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     user_game = db.query(UserGame).filter(UserGame.idUser == current_user.idUser, UserGame.idGame == id_game).first()
     if not user_game:
