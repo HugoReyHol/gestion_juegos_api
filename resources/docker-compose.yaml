@@ -6,8 +6,8 @@ services:
     environment:
       - DATABASE_HOST=127.0.0.1
       - POSTGRES_DB=postgres
-      - POSTGRES_PASSWORD=dbuser
-      - POSTGRES_USER=dbpass
+      - POSTGRES_PASSWORD=dbpass
+      - POSTGRES_USER=dbuser
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - ./data:/var/lib/postgresql/data
