@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import Annotated
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -14,11 +13,11 @@ router = APIRouter(
 )
 
 @router.get("/me")
-async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
+async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 @router.post("/login")
-async def get_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db:Session=Depends(get_db)):
+async def get_user(form_data: OAuth2PasswordRequestForm = Depends(), db:Session=Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
