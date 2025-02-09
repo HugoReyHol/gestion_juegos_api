@@ -1,5 +1,5 @@
 from app.db.database import SessionLocal
-from app.db.models import Game
+from app.db.models import Game, User
 
 
 def initialize_database():
@@ -54,6 +54,10 @@ def initialize_database():
         for game in predefined_games:
             if not db.query(Game).filter(Game.title == game.title).first():
                 db.add(game)
+
+        user = User(username= "test", password= "test")
+        if not db.query(User).filter(User.username == user.username).first():
+            db.add(user)
 
         db.commit()
     finally:
