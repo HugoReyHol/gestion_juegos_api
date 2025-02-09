@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import Optional
 
 class UserGameScheme(BaseModel):
-    idUser: int
     idGame: int
     score: Optional[int]
     timePlayed: int
