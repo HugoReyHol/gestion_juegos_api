@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
-class UserGameScheme(BaseModel):
+class UserGameInsert(BaseModel):
     idGame: int
     score: Optional[int]
     timePlayed: int

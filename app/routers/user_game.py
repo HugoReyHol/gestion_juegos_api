@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.db.models import UserGame, User
-from app.schemas.user_game import UserGameUpdate, UserGameScheme, UserGameResponse
+from app.schemas.user_game import UserGameUpdate, UserGameInsert, UserGameResponse
 from app.security.jwt_util import get_current_user
 
 router = APIRouter(
@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 @router.post("/")
-def insert_user_game(user_game: UserGameScheme, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def insert_user_game(user_game: UserGameInsert, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     new_user_game = UserGame(idUser=current_user.idUser, **user_game.model_dump(exclude_unset=True))
     db.add(new_user_game)
     db.commit()
