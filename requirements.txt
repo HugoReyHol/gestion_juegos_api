@@ -3,5 +3,4 @@ uvicorn
 psycopg2-binary
 SQLAlchemy
 python-jose[cryptography]
-passlib[bcrypt]
 python-multipart

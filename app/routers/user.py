@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.schemas.user import UserCreate
 from app.db.models import User
-from app.security.jwt_util import get_current_user, verify_password, ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
+from app.security.jwt_util import get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
 router = APIRouter(
     prefix="/user",
@@ -22,7 +22,7 @@ async def get_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], d
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    if not verify_password(plain_password=form_data.password, hashed_password=user.password):
+    if form_data.password != user.password:
         raise HTTPException(status_code=401, detail="Wrong credentials")
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -37,7 +37,7 @@ def insert_user(user: UserCreate, db:Session=Depends(get_db)) -> int:
 
     new_user = User(
         username = user.username,
-        password = hash_password(user.password)
+        password = user.password
     )
     db.add(new_user)
     db.commit()
