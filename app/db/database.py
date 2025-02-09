@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "postgresql://odoo:odoo@localhost:5342/gestion_juegos"
+SQLALCHEMY_DATABASE_URL = "postgresql://dbuser:dbpass@localhost:5432/gestion_juegos"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine,autocommit=False,autoflush=False)
