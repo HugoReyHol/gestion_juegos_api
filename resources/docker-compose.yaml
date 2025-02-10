@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:latest
     container_name: postgresdb
-    restart: unless-stopped       
+    restart: on-failure:3
     environment:
       - DATABASE_HOST=127.0.0.1
       - POSTGRES_DB=postgres
