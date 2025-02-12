@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserRequest, UserResponse
 from app.db.models import User
 from app.security.jwt_util import get_current_user, ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
@@ -53,10 +53,12 @@ def get_user(form_data: OAuth2PasswordRequestForm = Depends(), db:Session=Depend
     access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return {
         "idUser": user.idUser,
+        "username": user.username,
+        "password": user.password,
         "token": f"Bearer {access_token}",
-        "token_type": "bearer"}
+    }
 
-@router.post("/insert", responses={
+@router.post("/insert", response_model=UserResponse, responses={
     400: {
         "description": "The user already exists",
         "content": {
@@ -66,20 +68,25 @@ def get_user(form_data: OAuth2PasswordRequestForm = Depends(), db:Session=Depend
         }
     }
 })
-def insert_user(user: UserCreate, db:Session=Depends(get_db)):
-    existing_user = db.query(User).filter(User.username == user.username).first()
+def insert_user(user_req: UserRequest, db:Session=Depends(get_db)):
+    existing_user = db.query(User).filter(User.username == user_req.username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="The user already exists")
 
     new_user = User(
-        username = user.username,
-        password = user.password
+        username = user_req.username,
+        password = user_req.password
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    access_token = create_access_token(data={"sub": user_req.username}, expires_delta=access_token_expires)
 
-    return {"idUser": new_user.idUser, "token": f"Bearer {access_token}", "token_type": "bearer"}
+    return {
+        "idUser": new_user.idUser,
+        "username": new_user.username,
+        "password": new_user.password,
+        "token": f"Bearer {access_token}"
+    }
