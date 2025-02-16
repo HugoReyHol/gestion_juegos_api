@@ -63,7 +63,7 @@ def update_user_game(idGame: int, updates: UserGameUpdate, db: Session = Depends
     user_game = db.query(UserGame).filter(UserGame.idUser == current_user.idUser, UserGame.idGame == idGame)
     if not user_game.first():
         raise HTTPException(status_code=404, detail="UserGame not found")
-    user_game.update(updates.model_dump(exclude_unset=True))
+    user_game.update(updates.model_dump(exclude_none=True))
     db.commit()
 
 @router.delete("/{idGame}", responses={
