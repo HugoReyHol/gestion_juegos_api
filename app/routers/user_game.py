@@ -59,8 +59,8 @@ def get_user_games(current_user: User = Depends(get_current_user), db: Session =
         }
     }
 })
-def update_user_game(id_game: int, updates: UserGameUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    user_game = db.query(UserGame).filter(UserGame.idUser == current_user.idUser, UserGame.idGame == id_game)
+def update_user_game(idGame: int, updates: UserGameUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user_game = db.query(UserGame).filter(UserGame.idUser == current_user.idUser, UserGame.idGame == idGame)
     if not user_game.first():
         raise HTTPException(status_code=404, detail="UserGame not found")
     user_game.update(updates.model_dump(exclude_unset=True))
@@ -84,8 +84,8 @@ def update_user_game(id_game: int, updates: UserGameUpdate, db: Session = Depend
         }
     }
 })
-def delete_user_game(id_game: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    user_game = db.query(UserGame).filter(UserGame.idUser == current_user.idUser, UserGame.idGame == id_game).first()
+def delete_user_game(idGame: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user_game = db.query(UserGame).filter(UserGame.idUser == current_user.idUser, UserGame.idGame == idGame).first()
     if not user_game:
         raise HTTPException(status_code=404, detail="UserGame not found")
     db.delete(user_game)
