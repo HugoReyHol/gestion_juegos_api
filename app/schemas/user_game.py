@@ -4,7 +4,7 @@ from datetime import datetime
 
 class UserGameInsert(BaseModel):
     idGame: int
-    score: Optional[int] = None
+    score: Optional[int]
     timePlayed: int
     gameState: str
     lastChange: datetime
